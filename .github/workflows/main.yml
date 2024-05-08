@@ -82,10 +82,13 @@ jobs:
       - name : Helm package
         run: |
           cd ./helm-chart-poc/helm/contoso-helm-template
-          helm package .
+          echo "packagef1 = $(helm package .)" >> $GITHUB_ENV
+          # helm package .
           cd ../../
           cd ./helm/helm-templates
-          helm package .
+          echo "packagef2 = $(helm package .)" >> $GITHUB_ENV
+          # helm package .
+          
           
       # - name : Saving helm packages as artifacts
       #   uses: actions/upload-artifact@v4
@@ -104,7 +107,7 @@ jobs:
 
       - name: Helm push to ACR
         run: |
-          echo contoso-helm-template
-          helm push /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/contoso-helm-template/contoso-helm-template-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
-          helm push /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/helm-templates/helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+          
+          helm push ${{env.packagef1}} oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+          helm push ${{env.packagef2}} oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
