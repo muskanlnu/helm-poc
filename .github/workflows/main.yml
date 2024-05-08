@@ -1,0 +1,124 @@
+name: Import shared helm charts to ACR
+
+on:
+   workflow_call:
+    inputs:
+      application_name:
+        required: true
+        type: string
+      app_framework_version:
+        required: true
+        type: string
+      acr_name:
+        required: true
+        default: helmchartpocacr.azurecr.io
+        type: string
+      subscription:
+        required: true
+        default: a2d83027-e216-42fb-adab-6868a86f2d8e
+        type: string
+      tenant_name:
+        required: true
+        type: string
+      user_name:
+        required: true
+        default: helmchartpocacradmin
+        type: string
+    secrets:
+      ACCESS_TOKEN:
+        required: true
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+
+env:
+  CONTOSO_TEMPLATES_REPO: muskanlnu/helm-chart-poc
+ 
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Checkout contoso-templates repo
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.CONTOSO_TEMPLATES_REPO }}
+          path: './helm-chart-poc/'
+          token: ${{ secrets.ACCESS_TOKEN }}
+          ref: muscan
+
+      - name: Install Azure CLI
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y
+          curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+          AZ_REPO=$(lsb_release -cs)
+          echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+          sudo apt-get update
+          sudo apt-get install azure-cli
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+
+      - name: Save Version to Variable
+        run: |
+          echo "VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}" >> $GITHUB_ENV
+      
+      - name : Install Helm 
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - name: Helm Login
+        run: |
+          az account set --subscription ${{ inputs.subscription }}
+          # az acr login --name ${{ inputs.acr_name }}
+          export HELM_EXPERIMENTAL_OCI=1
+      
+          TOKEN=$(az acr login --name <acrName> --expose-token --output tsv --query accessToken)
+
+          echo $TOKEN | helm registry login ${{ inputs.acr_name }}.azurecr.io \
+            --username ${{inputs.user_name}} \
+            --password $PASSWORD
+      
+      - name : Helm package
+        run: |
+          cd ./helm-chart-poc/helm/contoso-helm-template
+          helm package .
+          cd ../../
+          cd ./helm-chart-poc/helm/helm-templates
+          helm package .
+
+      - name: Helm push to ACR
+        run: |
+          cd ./helm-chart-poc/helm/contoso-helm-template
+          helm push contoso-helm-templates-0.1.0.tgz oci://${{ inputs.acr_name }}.azurecr.io/helm
+          cd ../../
+          cd ./helm-chart-poc/helm/helm-templates
+          helm push helm-templates-0.1.0.tgz oci://${{ inputs.acr_name }}.azurecr.io/helm
+
+      - name: Helm Chart List
+        run: |
+          az acr repository show \
+          --name ${{inputs.acr_name}} \
+          --repository helm/contoso-helm-template helm/helm-templates
