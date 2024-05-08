@@ -89,10 +89,7 @@ jobs:
 
       - name: Helm push to ACR
         run: |
-          cd ./helm-chart-poc/helm/contoso-helm-template
           helm push contoso-helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
-          cd ../../
-          cd ./helm/helm-templates
           helm push helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
       - name: Helm Chart List
