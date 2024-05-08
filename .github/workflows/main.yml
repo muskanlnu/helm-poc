@@ -106,10 +106,5 @@ jobs:
         run: |
           echo contoso-helm-template
           helm push /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/contoso-helm-template/contoso-helm-template-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
-          helm push /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/helm-templates/contoso-helm-template-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+          helm push /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/helm-templates/helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
-      - name: Helm Chart List
-        run: |
-          az acr repository show \
-          --name ${{ secrets.ACR_NAME }} \
-          --repository helm/contoso-helm-template helm/helm-templates
