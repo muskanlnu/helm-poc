@@ -74,7 +74,7 @@ jobs:
           az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           # az acr login --name ${{ secrets.ACR_NAME }}
           export HELM_EXPERIMENTAL_OCI=1
-          TOKEN=$(az acr login --name <acrName> --expose-token --output tsv --query accessToken)
+          TOKEN=$(az acr login --name ${{ secrets.ACR_NAME }} --expose-token --output tsv --query accessToken)
           echo $TOKEN | helm registry login ${{ secrets.ACR_NAME }}.azurecr.io \
             --username ${{secrets.USER_NAME }} \
             --password $PASSWORD
