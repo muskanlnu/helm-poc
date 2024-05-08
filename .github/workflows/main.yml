@@ -3,9 +3,12 @@ name: Import shared helm charts to ACR
 on:
    workflow_dispatch:
     inputs:
-      name:
-        description: "Who to greet"
-        default: "World"
+      ENVIRONMENT:
+        description: 'GitHub Environment to pull action secrets from'
+        required: true
+        type: environment
+   repository_dispatch:
+       types: [Start AKS Deployment]
        
    workflow_call:
     inputs:
