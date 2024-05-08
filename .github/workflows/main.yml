@@ -1,14 +1,14 @@
 name: Import shared helm charts to ACR
 
 on:
+   workflow_dispatch:
+    inputs:
+      name:
+        description: "Who to greet"
+        default: "World"
+       
    workflow_call:
     inputs:
-      application_name:
-        required: true
-        type: string
-      app_framework_version:
-        required: true
-        type: string
       acr_name:
         required: true
         default: helmchartpocacr.azurecr.io
