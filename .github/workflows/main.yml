@@ -3,13 +3,17 @@ name: Import shared helm charts to ACR
 on:
    workflow_dispatch:
     inputs:
-      enviornment:
+      enviornment1:
         description: 'GitHub Environment to pull action secrets from'
         required: true
         type: environment
         
    workflow_call:
     inputs:
+      environment:
+         required: true
+         default: muskan-acr-env
+         type: string
       acr_name:
         required: true
         default: helmchartpocacr.azurecr.io
@@ -43,9 +47,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ env.CONTOSO_TEMPLATES_REPO }}
+          environment: ${{ inputs.environment }}
           path: './helm-chart-poc/'
           token: ${{ secrets.ACCESS_TOKEN || github.token }}
           ref: main
+        
 
       - name: Install Azure CLI
         run: |
@@ -60,6 +66,7 @@ jobs:
       - name: Azure Login
         uses: azure/actions/login@v1
         with:
+          environment: ${{ inputs.environment }}
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
       - name: Helm Login
