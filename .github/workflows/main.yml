@@ -7,9 +7,7 @@ on:
         description: 'GitHub Environment to pull action secrets from'
         required: true
         type: environment
-   repository_dispatch:
-       types: [Start AKS Deployment]
-       
+        
    workflow_call:
     inputs:
       acr_name:
@@ -27,21 +25,8 @@ on:
         required: true
         default: helmchartpocacradmin
         type: string
-    secrets:
-      ACCESS_TOKEN:
-        required: true
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_CLIENT_SECRET:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-
 env:
   CONTOSO_TEMPLATES_REPO: muskanlnu/helm-chart-poc
- 
 
 jobs:
   build:
@@ -64,28 +49,14 @@ jobs:
 
       - name: Install Azure CLI
         run: |
-          sudo apt-get update -y
-          sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y
-          curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
-          AZ_REPO=$(lsb_release -cs)
-          echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
-          sudo apt-get update
           sudo apt-get install azure-cli
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
-        with:
-          versionSpec: '5.x'
-
-      - name: Save Version to Variable
-        run: |
-          echo "VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}" >> $GITHUB_ENV
       
       - name : Install Helm 
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
           chmod 700 get_helm.sh
           ./get_helm.sh
+          
       - name : see creds 
         run : |
           echo ${{secrets.AZURE_CLIENT_ID }}
@@ -101,9 +72,7 @@ jobs:
           az account set --subscription ${{ inputs.subscription }}
           # az acr login --name ${{ inputs.acr_name }}
           export HELM_EXPERIMENTAL_OCI=1
-      
           TOKEN=$(az acr login --name <acrName> --expose-token --output tsv --query accessToken)
-
           echo $TOKEN | helm registry login ${{ inputs.acr_name }}.azurecr.io \
             --username ${{inputs.user_name}} \
             --password $PASSWORD
