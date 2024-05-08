@@ -87,26 +87,26 @@ jobs:
           cd ./helm/helm-templates
           helm package .
           
-      - name : Saving helm packages as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name:  contoso-helm-template
-          path: /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/contoso-helm-template/contoso-helm-template-0.1.0.tgz
+      # - name : Saving helm packages as artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name:  contoso-helm-template
+      #     path: /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/contoso-helm-template/contoso-helm-template-0.1.0.tgz
           
-      - name : Saving helm packages as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name:  helm-templates
-          path: /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/helm-templates/contoso-helm-template-0.1.0.tgz
+      # - name : Saving helm packages as artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name:  helm-templates
+      #     path: /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/helm-templates/contoso-helm-template-0.1.0.tgz
           
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
+      # - name: Download all workflow run artifacts
+      #   uses: actions/download-artifact@v4
 
       - name: Helm push to ACR
         run: |
           echo contoso-helm-template
-          helm push contoso-helm-template-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
-          helm push helm-template-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+          helm push /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/contoso-helm-template/contoso-helm-template-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+          helm push /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/helm-templates/contoso-helm-template-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
       - name: Helm Chart List
         run: |
