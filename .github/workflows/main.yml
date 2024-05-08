@@ -71,12 +71,12 @@ jobs:
           
       - name: Helm Login
         run: |
-          az account set --subscription ${{ inputs.subscription }}
-          # az acr login --name ${{ inputs.acr_name }}
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          # az acr login --name ${{ secrets.ACR_NAME }}
           export HELM_EXPERIMENTAL_OCI=1
           TOKEN=$(az acr login --name <acrName> --expose-token --output tsv --query accessToken)
-          echo $TOKEN | helm registry login ${{ inputs.acr_name }}.azurecr.io \
-            --username ${{inputs.user_name}} \
+          echo $TOKEN | helm registry login ${{ secrets.ACR_NAME }}.azurecr.io \
+            --username ${{secrets.USER_NAME)}} \
             --password $PASSWORD
       
       - name : Helm package
@@ -90,13 +90,13 @@ jobs:
       - name: Helm push to ACR
         run: |
           cd ./helm-chart-poc/helm/contoso-helm-template
-          helm push contoso-helm-templates-0.1.0.tgz oci://${{ inputs.acr_name }}.azurecr.io/helm
+          helm push contoso-helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
           cd ../../
           cd ./helm-chart-poc/helm/helm-templates
-          helm push helm-templates-0.1.0.tgz oci://${{ inputs.acr_name }}.azurecr.io/helm
+          helm push helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
       - name: Helm Chart List
         run: |
           az acr repository show \
-          --name ${{inputs.acr_name}} \
+          --name ${{ secrets.ACR_NAME }} \
           --repository helm/contoso-helm-template helm/helm-templates
