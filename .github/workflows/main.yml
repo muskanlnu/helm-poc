@@ -72,12 +72,12 @@ jobs:
       - name: Helm Login
         run: |
           az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          # az acr login --name ${{ secrets.ACR_NAME }}
-          export HELM_EXPERIMENTAL_OCI=1
-          TOKEN=$(az acr login --name ${{ secrets.ACR_NAME }} --expose-token --output tsv --query accessToken)
-          echo $TOKEN | helm registry login ${{ secrets.ACR_NAME }}.azurecr.io \
-            --username 00000000-0000-0000-0000-000000000000 \
-            --password-stdin
+          az acr login --name ${{ secrets.ACR_NAME }}
+          # export HELM_EXPERIMENTAL_OCI=1
+          # TOKEN=$(az acr login --name ${{ secrets.ACR_NAME }} --expose-token --output tsv --query accessToken)
+          # echo $TOKEN | helm registry login ${{ secrets.ACR_NAME }}.azurecr.io \
+          #   --username 00000000-0000-0000-0000-000000000000 \
+          #   --password-stdin
       
       - name : Helm package
         run: |
