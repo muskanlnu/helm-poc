@@ -84,7 +84,7 @@ jobs:
           cd ./helm-chart-poc/helm/contoso-helm-template
           helm package .
           cd ../../
-          cd ./helm-chart-poc/helm/helm-templates
+          cd ./helm/helm-templates
           helm package .
 
       - name: Helm push to ACR
@@ -92,7 +92,7 @@ jobs:
           cd ./helm-chart-poc/helm/contoso-helm-template
           helm push contoso-helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
           cd ../../
-          cd ./helm-chart-poc/helm/helm-templates
+          cd ./helm/helm-templates
           helm push helm-templates-0.1.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
       - name: Helm Chart List
