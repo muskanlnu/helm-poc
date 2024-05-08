@@ -76,8 +76,8 @@ jobs:
           export HELM_EXPERIMENTAL_OCI=1
           TOKEN=$(az acr login --name ${{ secrets.ACR_NAME }} --expose-token --output tsv --query accessToken)
           echo $TOKEN | helm registry login ${{ secrets.ACR_NAME }}.azurecr.io \
-            --username ${{secrets.ACR_USERNAME }} \
-            --password ${{secrets.ACR_PASSWORD }}
+            --username 00000000-0000-0000-0000-000000000000 \
+            --password-stdin
       
       - name : Helm package
         run: |
