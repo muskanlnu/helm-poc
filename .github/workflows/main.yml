@@ -3,7 +3,7 @@ name: Import shared helm charts to ACR
 on:
    workflow_dispatch:
     inputs:
-      ENVIRONMENT:
+      enviornment:
         description: 'GitHub Environment to pull action secrets from'
         required: true
         type: environment
