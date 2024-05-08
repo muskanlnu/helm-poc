@@ -59,7 +59,7 @@ jobs:
         with:
           repository: ${{ env.CONTOSO_TEMPLATES_REPO }}
           path: './helm-chart-poc/'
-          token: ${{ secrets.ACCESS_TOKEN }}
+          token: ${{ secrets.ACCESS_TOKEN | github.token }}
           ref: main
 
       - name: Install Azure CLI
