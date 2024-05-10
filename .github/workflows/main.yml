@@ -39,7 +39,7 @@ on:
         type: string
 env:
   TEMPLATES_REPO: nginxinc/kubernetes-ingress
-  TEMPLATES_REPO_2: external-secrets/external-secrets/deploy/charts/external-secrets
+  TEMPLATES_REPO_2: external-secrets/external-secrets
 
 jobs:
   build:
