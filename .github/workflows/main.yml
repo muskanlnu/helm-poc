@@ -56,7 +56,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ env.TEMPLATES_REPO }}
-          environment: ${{ inputs.environment }}
           path: './kubernetes-ingress/'
           token: ${{ secrets.ACCESS_TOKEN || github.token }}
           ref: main
@@ -65,10 +64,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ env.TEMPLATES_REPO_2 }}
-          environment: ${{ inputs.environment }}
           path: './external-secrets'
           token: ${{ secrets.ACCESS_TOKEN || github.token }}
-          ref: main
+          ref: master
         
 
       - name: Install Azure CLI
