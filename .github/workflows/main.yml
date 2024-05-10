@@ -66,7 +66,7 @@ jobs:
           repository: ${{ env.TEMPLATES_REPO_2 }}
           path: './external-secrets/'
           token: ${{ secrets.ACCESS_TOKEN || github.token }}
-          ref: master
+          ref: main
         
 
       - name: Install Azure CLI
