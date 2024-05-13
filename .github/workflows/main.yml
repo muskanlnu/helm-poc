@@ -41,6 +41,7 @@ on:
 env:
   TEMPLATES_REPO: nginxinc/kubernetes-ingress
   TEMPLATES_REPO_2: external-secrets/external-secrets
+  packagef1: ''
 
 jobs:
   build:
@@ -100,7 +101,7 @@ jobs:
       - name : Helm package
         run: |
           cd ./kubernetes-ingress/charts/nginx-ingress
-          echo "packagef1 = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
+          echo "${{ env.packagef1}} = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
           helm package .
           # cd ../../
           # cd ./helm/helm-templates
