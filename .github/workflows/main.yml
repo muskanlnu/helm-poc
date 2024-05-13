@@ -109,7 +109,7 @@ jobs:
           
       - name : Helm package second template
         run: |
-          cd ./external-secrets/deploy/charts/external-secrets
+          cd ./kubernetes-external-secrets/charts/kubernetes-external-secrets
           helm package .
      
           
