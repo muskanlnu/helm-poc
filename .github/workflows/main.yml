@@ -40,7 +40,7 @@ on:
         type: string
 env:
   TEMPLATES_REPO: nginxinc/kubernetes-ingress
-  TEMPLATES_REPO_2: external-secrets/external-secrets
+  TEMPLATES_REPO_2: external-secrets/kubernetes-external-secrets
 
 jobs:
   build:
@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ env.TEMPLATES_REPO_2 }}
-          path: './external-secrets/'
+          path: './kubernetes-external-secrets/'
           token: ${{ secrets.ACCESS_TOKEN || github.token }}
           ref: main
         
@@ -111,7 +111,7 @@ jobs:
         run: |
           cd ./external-secrets/deploy/charts/external-secrets
           helm package .
-          echo $env:packagef1
+     
           
           
       # - name : Saving helm packages as artifacts
@@ -131,7 +131,7 @@ jobs:
 
       - name: Helm push to ACR
         run: |
-          echo ${{env.packagef1}}
-          helm push ${{env.packagef1}} oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
-          helm push /home/runner/work/helm-poc/helm-poc/external-secrets/external-secrets/deploy/charts/external-secrets/kubernetes-external-secrets:8.5.5 oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+      
+          helm push  oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+          helm push  oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
