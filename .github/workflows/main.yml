@@ -68,7 +68,7 @@ jobs:
           repository: ${{ env.TEMPLATES_REPO_2 }}
           path: './kubernetes-external-secrets/'
           token: ${{ secrets.ACCESS_TOKEN || github.token }}
-          ref: main
+          ref: master
         
 
       - name: Install Azure CLI
