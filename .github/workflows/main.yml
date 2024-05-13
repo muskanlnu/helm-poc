@@ -7,6 +7,7 @@ on:
         description: 'GitHub Environment to pull action secrets from'
         required: true
         type: environment
+   push:
         
    workflow_call:
     inputs:
@@ -98,7 +99,7 @@ jobs:
       - name : Helm package
         run: |
           cd ./kubernetes-ingress/charts/nginx-ingress
-          # echo "packagef1 = $(helm package .)" >> $GITHUB_ENV
+          echo "packagef1 = $(helm package . | cut -d': ' -f2)" >> $GITHUB_ENV
           helm package .
           # cd ../../
           # cd ./helm/helm-templates
@@ -129,6 +130,6 @@ jobs:
       - name: Helm push to ACR
         run: |
           
-          helm push /home/runner/work/helm-poc/helm-poc/kubernetes-ingress/charts/nginx-ingress/nginx-ingress-1.3.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+          helm push ${{env.packagef1}} oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
           helm push /home/runner/work/helm-poc/helm-poc/external-secrets/external-secrets/deploy/charts/external-secrets/kubernetes-external-secrets:8.5.5 oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
 
