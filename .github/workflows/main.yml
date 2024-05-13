@@ -101,7 +101,7 @@ jobs:
       - name : Helm package
         run: |
           cd ./kubernetes-ingress/charts/nginx-ingress
-          echo "${{ env.packagef1}} = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
+          echo "packagef1 = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
           helm package .
           # cd ../../
           # cd ./helm/helm-templates
