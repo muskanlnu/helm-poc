@@ -100,7 +100,7 @@ jobs:
       - name : Helm package
         run: |
           cd ./kubernetes-ingress/charts/nginx-ingress
-          echo "packagef1 = $(helm package . | cut -d: -f2)" >> $GITHUB_ENV
+          echo "packagef1 = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
           helm package .
           # cd ../../
           # cd ./helm/helm-templates
@@ -111,7 +111,7 @@ jobs:
         run: |
           cd ./external-secrets/deploy/charts/external-secrets
           helm package .
-          echo "$packagef1"
+          echo $packagef1
           
           
       # - name : Saving helm packages as artifacts
