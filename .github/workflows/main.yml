@@ -111,7 +111,7 @@ jobs:
         run: |
           cd ./external-secrets/deploy/charts/external-secrets
           helm package .
-          echo "${{env.packagef1}}"
+          echo "${{github.packagef1}}"
           
           
       # - name : Saving helm packages as artifacts
