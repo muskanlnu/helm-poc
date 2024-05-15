@@ -78,10 +78,12 @@ jobs:
         run: |
           cd "./${{ inputs.CHART_DIRECTORY_PATH }}/${{ inputs.CHART_PATH }}"
           helm package .
-          echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> "$GITHUB_OUTPUT"
+          echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
+          echo "id = $(helm package .)" >> "GITHUB_ENV"
 
       - name: Helm push to ACR
         run: |
+           echo "id = ${{ env.id }}
            echo "helmpkg = ${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}"
            helm push ${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
 
