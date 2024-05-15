@@ -78,7 +78,7 @@ jobs:
         run: |
           cd "./${{ inputs.CHART_DIRECTORY_PATH }}/${{ inputs.CHART_PATH }}"
           helm package .
-          echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
+          echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> "$GITHUB_OUTPUT"
           echo "id = $(helm package .)" >> "GITHUB_ENV"
           echo "hello = world" >> "GITHUB_ENV"
 
