@@ -47,14 +47,19 @@ jobs:
       - name: Checkout Helm Repository
         uses: actions/checkout@v4
         with:
-          repository: "${{ inputs.CHART_REPO_PATH }}/${{ inputs.CHART_DIRECTORY_PATH }}"
-          path: "./${{ inputs.CHART_DIRECTORY_PATH }}/"
+          repository: ${{ inputs.CHART_REPO_PATH }}/${{ inputs.CHART_DIRECTORY_PATH }}
+          path: './${{ inputs.CHART_DIRECTORY_PATH }}/'
           token: ${{ secrets.ACCESS_TOKEN }}
-          ref: "${{ inputs.CHECKOUT_BRANCH }}"
+          ref: ${{ inputs.CHECKOUT_BRANCH }}
           
       - name: Install Azure CLI
         run: |
           sudo apt-get install azure-cli
+      
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
       
       - name : Install Helm 
         run: |
@@ -70,13 +75,13 @@ jobs:
       - name: Helm Login
         id: HelmLogin
         run: |
-          az account set --subscription "${{ inputs.SUBSCRIPTION }}"
-          az acr login --name "${{ inputs.ACR_NAME }}"
+          az account set --subscription ${{ inputs.SUBSCRIPTION }}
+          az acr login --name ${{ inputs.ACR_NAME }}
     
       - name : Helm package Helm templates
         id : HelmPkg
         run: |
-          cd "./${{ inputs.CHART_DIRECTORY_PATH }}/${{ inputs.CHART_PATH }}"
+          cd ./${{ inputs.CHART_DIRECTORY_PATH }}/${{ inputs.CHART_PATH }}
           helm package .
           echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> $GITHUB_ENV
        
