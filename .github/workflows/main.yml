@@ -56,11 +56,6 @@ jobs:
         run: |
           sudo apt-get install azure-cli
       
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
-        with:
-          versionSpec: '5.x'
-      
       - name : Install Helm 
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
