@@ -82,5 +82,5 @@ jobs:
        
       - name: Helm push to ACR
         run: |
-           helm push %${{ $env.HELM_CHART_PKG_PATH }}%  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
+           helm push %${{ env.HELM_CHART_PKG_PATH }}%  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
 
