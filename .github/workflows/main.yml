@@ -82,5 +82,6 @@ jobs:
 
       - name: Helm push to ACR
         run: |
-           helm push "${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}"  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
+           echo "helmpkg = ${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}"
+           helm push ${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
 
