@@ -86,5 +86,5 @@ jobs:
         run: |
            echo "hello = ${{ env.hello }}"
            echo "helmpkg = ${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}"
-           helm push ${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
+           helm push ${{ needs.build.outputs.HELM_CHART_PKG_PATH }}  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
 
