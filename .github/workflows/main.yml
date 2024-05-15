@@ -33,8 +33,7 @@ on:
         required: true
         default: 'charts/nginx-ingress'
         type: string
-  push:
-
+        
 jobs:
   build:
     runs-on: ubuntu-latest
