@@ -48,10 +48,10 @@ jobs:
       - name: Checkout Helm Repository
         uses: actions/checkout@v4
         with:
-          repository: '${{ github.event.inputs.CHART_REPO_PATH }}/${{ github.event.inputs.CHART_DIRECTORY_PATH }}'
-          path: './${{ github.event.inputs.CHART_DIRECTORY_PATH }}/'
+          repository: "${{ inputs.CHART_REPO_PATH }}/${{ inputs.CHART_DIRECTORY_PATH }}"
+          path: "./${{ inputs.CHART_DIRECTORY_PATH }}/"
           token: ${{ secrets.ACCESS_TOKEN }}
-          ref: '${{ github.event.inputs.CHECKOUT_BRANCH }}'
+          ref: "${{ inputs.CHECKOUT_BRANCH }}"
           
       - name: Install Azure CLI
         run: |
@@ -66,23 +66,22 @@ jobs:
       - name: Azure Login
         uses: azure/actions/login@v1
         with:
-          environment: ${{ inputs.environment }}
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
       - name: Helm Login
         id: HelmLogin
         run: |
-          az account set --subscription ${{ github.event.inputs.SUBSCRIPTION }}
-          az acr login --name ${{ github.event.inputs.ACR_NAME }}
+          az account set --subscription "${{ inputs.SUBSCRIPTION }}"
+          az acr login --name "${{ inputs.ACR_NAME }}"
     
       - name : Helm package Helm templates
         id : HelmPkg
         run: |
-          cd ./${{ github.event.inputs.CHART_DIRECTORY_PATH }}/${{ github.event.inputs.CHART_PATH }}
+          cd "./${{ inputs.CHART_DIRECTORY_PATH }}/${{ inputs.CHART_PATH }}"
           helm package .
           echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
 
       - name: Helm push to ACR
         run: |
-           helm push "${{ env.HELM_CHART_PKG_PATH }}"  oci://${{ github.event.inputs.ACR_NAME }}.azurecr.io/helm
+           helm push "${{ env.HELM_CHART_PKG_PATH }}"  oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
 
