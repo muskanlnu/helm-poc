@@ -1,52 +1,44 @@
 name: Import shared helm charts to ACR
 
 on:
-   workflow_dispatch:
+  workflow_dispatch :
     inputs:
-      enviornment1:
-        description: 'GitHub Environment to pull action secrets from'
+      ACR_NAME:
+        description: 'ACR Name'
         required: true
-        type: environment
-   push:
-        
-   workflow_call:
-    inputs:
-      environment:
-         required: true
-         default: muskan-acr-env
-         type: string
-      acr_name:
-        required: true
-        default: helmchartpocacr.azurecr.io
+        default: 'helmchartpocacr'
         type: string
-      subscription:
+      SUBSCRIPTION:
+        description: 'Subscription ID'
         required: true
-        default: a2d83027-e216-42fb-adab-6868a86f2d8e
+        default: 'a2d83027-e216-42fb-adab-6868a86f2d8e'
         type: string
-      tenant_name:
+      CHART_REPO_PATH: 
+        description: 'The Path to repo containing Helm charts'
         required: true
+        default: 'nginxinc'
         type: string
-      user_name:
+      CHECKOUT_BRANCH:
+        description: 'The branch from which helm charts need to be extracted from eg: main or master'
         required: true
-        default: helmchartpocacradmin
+        default: 'main'
         type: string
-      repo_name:
+      CHART_DIRECTORY_PATH:
+        description: 'The Path of parent folder that contains Helm Charts'
         required: true
-        default: helm-poc
+        default: 'kubernetes-ingress'
         type: string
-      target_name:
+      CHART_PATH: 
+        description: 'The Path of the helm folder'
         required: true
-        default: kubernetes-ingress/charts/nginx-ingress
+        default: 'charts/nginx-ingress'
         type: string
-env:
-  TEMPLATES_REPO: nginxinc/kubernetes-ingress
-  TEMPLATES_REPO_2: external-secrets/kubernetes-external-secrets
+  push:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment : ${{ inputs.environment}}
-
+    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -54,23 +46,14 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Checkout kubernetes-ingress/nginx-ingress
+      - name: Checkout Helm Repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ env.TEMPLATES_REPO }}
-          path: './kubernetes-ingress/'
-          token: ${{ secrets.ACCESS_TOKEN || github.token }}
-          ref: main
+          repository: '${{ github.event.inputs.CHART_REPO_PATH }}/${{ github.event.inputs.CHART_DIRECTORY_PATH }}'
+          path: './${{ github.event.inputs.CHART_DIRECTORY_PATH }}/'
+          token: ${{ secrets.ACCESS_TOKEN | github.token }}
+          ref: '${{ github.event.inputs.CHECKOUT_BRANCH }}'
           
-      - name: Checkout external-secrets/kubernetes-external-secrets
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.TEMPLATES_REPO_2 }}
-          path: './kubernetes-external-secrets/'
-          token: ${{ secrets.ACCESS_TOKEN || github.token }}
-          ref: master
-        
-
       - name: Install Azure CLI
         run: |
           sudo apt-get install azure-cli
@@ -88,50 +71,19 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
       - name: Helm Login
+        id: HelmLogin
         run: |
-          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          az acr login --name ${{ secrets.ACR_NAME }}
-          # export HELM_EXPERIMENTAL_OCI=1
-          # TOKEN=$(az acr login --name ${{ secrets.ACR_NAME }} --expose-token --output tsv --query accessToken)
-          # echo $TOKEN | helm registry login ${{ secrets.ACR_NAME }}.azurecr.io \
-          #   --username 00000000-0000-0000-0000-000000000000 \
-          #   --password-stdin
-      
-      - name : Helm package
+          az account set --subscription ${{ github.event.inputs.SUBSCRIPTION }}
+          az acr login --name ${{ github.event.inputs.ACR_NAME }}
+    
+      - name : Helm package Helm templates
+        id : HelmPkg
         run: |
-          cd ./kubernetes-ingress/charts/nginx-ingress
-          echo "packagef1 = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
+          cd ./${{ github.event.inputs.CHART_DIRECTORY_PATH }}/${{ github.event.inputs.CHART_PATH }}
           helm package .
-          # cd ../../
-          # cd ./helm/helm-templates
-          # # echo "packagef2 = $(helm package .)" >> $GITHUB_ENV
-          # helm package .
-          
-      - name : Helm package second template
-        run: |
-          cd ./kubernetes-external-secrets/charts/kubernetes-external-secrets
-          helm package .
-     
-          
-          
-      # - name : Saving helm packages as artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name:  contoso-helm-template
-      #     path: /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/contoso-helm-template/contoso-helm-template-0.1.0.tgz
-          
-      # - name : Saving helm packages as artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name:  helm-templates
-      #     path: /home/runner/work/helm-poc/helm-poc/helm-chart-poc/helm/helm-templates/contoso-helm-template-0.1.0.tgz
-          
-      # - name: Download all workflow run artifacts
-      #   uses: actions/download-artifact@v4
+          echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> "$GITHUB_ENV"
 
       - name: Helm push to ACR
         run: |
-      
-          helm push /home/runner/work/helm-poc/helm-poc/kubernetes-ingress/charts/nginx-ingress/nginx-ingress-1.3.0.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
-          helm push /home/runner/work/helm-poc/helm-poc/kubernetes-external-secrets/charts/kubernetes-external-secrets/kubernetes-external-secrets-8.5.5.tgz oci://${{ secrets.ACR_NAME }}.azurecr.io/helm
+           helm push "${{ env.HELM_CHART_PKG_PATH }}"  oci://${{ github.event.inputs.ACR_NAME }}.azurecr.io/helm
 
