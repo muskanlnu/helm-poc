@@ -82,5 +82,9 @@ jobs:
        
       - name: Helm push to ACR
         run: |
+           if [[ -n "${{ env.NGINX_INGRESS_PKG_PATH }}" ]]; then
+           echo "PATH is not empty"
+           else
+           echo "PATH is EMPTY GRAH"
            helm push ${{ env.HELM_CHART_PKG_PATH }} oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
 
