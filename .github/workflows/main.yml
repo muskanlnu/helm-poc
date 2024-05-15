@@ -51,7 +51,7 @@ jobs:
         with:
           repository: '${{ github.event.inputs.CHART_REPO_PATH }}/${{ github.event.inputs.CHART_DIRECTORY_PATH }}'
           path: './${{ github.event.inputs.CHART_DIRECTORY_PATH }}/'
-          token: ${{ secrets.ACCESS_TOKEN | github.token }}
+          token: ${{ secrets.ACCESS_TOKEN }}
           ref: '${{ github.event.inputs.CHECKOUT_BRANCH }}'
           
       - name: Install Azure CLI
