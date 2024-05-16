@@ -78,13 +78,9 @@ jobs:
         run: |
           cd ./${{ inputs.CHART_DIRECTORY_PATH }}/${{ inputs.CHART_PATH }}
           helm package .
-          echo "HELM_CHART_PKG_PATH = $(helm package . | cut -d: -f2)" >> $GITHUB_ENV
-       
+          echo "HELM_CHART_PKG_PATH = '$(helm package . | cut -d: -f2)'" >> $GITHUB_OUTPUT
+        
       - name: Helm push to ACR
         run: |
-           if [[ -n "${{ env.NGINX_INGRESS_PKG_PATH }}" ]]; then
-           echo "PATH is not empty"
-           else
-           echo "PATH is EMPTY GRAH"
-           helm push ${{ env.HELM_CHART_PKG_PATH }} oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
+           helm push "${{ steps.HelmPkg.outputs.HELM_CHART_PKG_PATH }}" oci://${{ inputs.ACR_NAME }}.azurecr.io/helm
 
