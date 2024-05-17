@@ -1,0 +1,27 @@
+name: test workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      TEST_YAML:
+        required: true
+        default: 'please work'
+        type: string
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+
+    steps:
+       - name: Save Env variable
+         run: |
+            echo "colour = $( 4 + 5 )" >> $GITHUB_ENV
+
+       - name: Get env
+         run: | 
+           echo "here is to hoping this works and give me the colour : ${{ env.colour }}
+         
+      
+        
+        
+        
+        
