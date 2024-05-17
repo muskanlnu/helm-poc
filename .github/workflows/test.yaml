@@ -15,10 +15,14 @@ jobs:
        - name: Save Env variable
          id: test
          run: |
+            echo "PKG_PATH = something something"
+            echo "::set-output name=pkg_path::$PKG_PATH"
             echo "colour = test" >> "$GITHUB_OUTPUT"
 
        - name: Get env
+         working-directory: test
          run: | 
+           echo "PKG_PATH from previous step: ${{ needs.Pkg.outputs.pkg_path }}"
            echo "here is to hoping this works and give me the colour : ${{ steps.test.outputs.colour }}"
          
       
