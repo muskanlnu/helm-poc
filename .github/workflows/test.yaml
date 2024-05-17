@@ -13,12 +13,13 @@ jobs:
 
     steps:
        - name: Save Env variable
+         id: test
          run: |
-            echo "colour = test" >> "$GITHUB_ENV"
+            echo "colour = test" >> "$GITHUB_OUTPUT"
 
        - name: Get env
          run: | 
-           echo "here is to hoping this works and give me the colour : ${{ env.colour }}"
+           echo "here is to hoping this works and give me the colour : ${{ steps.test.outputs.colour }}"
          
       
         
